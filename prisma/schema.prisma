@@ -1,0 +1,132 @@
+// Esquema inicial del prototipo funcional.
+// Las URLs de conexión se configuran en prisma7.config.ts, no aquí.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum BusinessType {
+  COMMERCE
+  SERVICE
+  PRODUCTION
+  OTHER
+}
+
+enum ScenarioType {
+  OPTIMISTIC
+  CONSERVATIVE
+  PESSIMISTIC
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  role         UserRole   @default(USER)
+  isActive     Boolean    @default(true)
+  businesses   Business[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([role])
+}
+
+model Business {
+  id          String       @id @default(cuid())
+  ownerId     String
+  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  type        BusinessType @default(OTHER)
+  simulations Simulation[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([ownerId])
+  @@index([type])
+}
+
+model Simulation {
+  id         String   @id @default(cuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name       String
+
+  // Datos financieros de entrada. Valores monetarios expresados en COP.
+  initialInvestment     Decimal @db.Decimal(16, 2)
+  monthlyFixedCosts     Decimal @db.Decimal(16, 2)
+  variableCostPerUnit   Decimal @db.Decimal(16, 2)
+  salePricePerUnit      Decimal @db.Decimal(16, 2)
+  estimatedMonthlyUnits Int
+  projectionMonths      Int     @default(12)
+  annualDiscountRate    Decimal @default(12) @db.Decimal(8, 4)
+
+  // Datos productivos opcionales: se diligencian cuando aplique.
+  productionCapacityUnits Int?
+  machineryDescription    String?
+  monthlyMaintenanceCost  Decimal? @db.Decimal(16, 2)
+  monthlyEnergyKwh        Decimal? @db.Decimal(16, 2)
+  energyCostPerKwh        Decimal? @db.Decimal(16, 4)
+
+  scenarios Scenario[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([businessId])
+  @@index([createdAt])
+}
+
+model Scenario {
+  id           String       @id @default(cuid())
+  simulationId String
+  simulation   Simulation   @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  type         ScenarioType
+
+  // Ajustes porcentuales aplicados a los datos base.
+  priceChangePercent        Decimal @default(0) @db.Decimal(8, 4)
+  demandChangePercent       Decimal @default(0) @db.Decimal(8, 4)
+  variableCostChangePercent Decimal @default(0) @db.Decimal(8, 4)
+
+  // Resultados calculados por el motor financiero.
+  monthlyRevenue       Decimal? @db.Decimal(16, 2)
+  monthlyTotalCosts    Decimal? @db.Decimal(16, 2)
+  monthlyProfit        Decimal? @db.Decimal(16, 2)
+  profitabilityPercent Decimal? @db.Decimal(8, 4)
+  breakEvenUnits       Decimal? @db.Decimal(16, 2)
+  npv                  Decimal? @db.Decimal(16, 2)
+  irrPercent           Decimal? @db.Decimal(8, 4)
+
+  projections Projection[]
+  createdAt   DateTime     @default(now())
+
+  @@unique([simulationId, type])
+  @@index([simulationId])
+}
+
+model Projection {
+  id                 String   @id @default(cuid())
+  scenarioId         String
+  scenario           Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  month              Int
+  revenue            Decimal  @db.Decimal(16, 2)
+  fixedCosts         Decimal  @db.Decimal(16, 2)
+  variableCosts      Decimal  @db.Decimal(16, 2)
+  totalCosts         Decimal  @db.Decimal(16, 2)
+  profit             Decimal  @db.Decimal(16, 2)
+  netCashFlow        Decimal  @db.Decimal(16, 2)
+  cumulativeCashFlow Decimal  @db.Decimal(16, 2)
+
+  @@unique([scenarioId, month])
+  @@index([scenarioId])
+}
