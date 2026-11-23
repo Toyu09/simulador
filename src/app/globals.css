@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
-:root { --background: #f8fafc; --foreground: #0f172a; }
+:root {
+  --background: #f5f8f6;
+  --foreground: #14251e;
+  --brand: #087f5b;
+  --brand-dark: #075c45;
+  --mint: #e6f5ee;
+}
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -8,13 +14,18 @@
   --font-mono: var(--font-geist-mono);
 }
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body { background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; }
+::selection { background: #b7ead2; color: #123c2c; }
 .field {
-  display:block; width:100%; margin-top:.45rem; border:1px solid #cbd5e1;
-  border-radius:.65rem; background:white; padding:.7rem .8rem; color:#0f172a;
-  outline:none; font-weight:400;
+  display:block; width:100%; margin-top:.45rem; border:1px solid #d7e3dc;
+  border-radius:.85rem; background:#fbfdfb; padding:.78rem .9rem; color:#14251e;
+  outline:none; font-weight:400; transition:border-color .15s,box-shadow .15s,background .15s;
 }
-.field:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgb(37 99 235 / .12); }
-.primary-button { display:inline-flex; align-items:center; justify-content:center; border-radius:.7rem; background:#1d4ed8; padding:.75rem 1.1rem; color:white; font-size:.9rem; font-weight:650; transition:background .15s; }
-.primary-button:hover { background:#1e40af; }
-.primary-button:disabled { cursor:not-allowed; opacity:.6; }
+.field:focus { border-color:#15966d; background:white; box-shadow:0 0 0 4px rgb(21 150 109 / .12); }
+.primary-button { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; border-radius:.85rem; background:#087f5b; padding:.82rem 1.15rem; color:white; font-size:.9rem; font-weight:700; box-shadow:0 5px 14px rgb(8 127 91 / .16); transition:transform .15s,background .15s; }
+.primary-button:hover { background:#066b4c; transform:translateY(-1px); }
+.primary-button:disabled { cursor:not-allowed; opacity:.6; transform:none; }
+.panel { border:1px solid #e3ebe6; border-radius:1.25rem; background:white; box-shadow:0 8px 28px rgb(25 55 40 / .035); }
+.eyebrow { color:#07805b; font-size:.69rem; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+.soft-grid { background-image:linear-gradient(rgb(8 127 91 / .045) 1px,transparent 1px),linear-gradient(90deg,rgb(8 127 91 / .045) 1px,transparent 1px); background-size:28px 28px; }
