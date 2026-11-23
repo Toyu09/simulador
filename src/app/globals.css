@@ -1,26 +1,20 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+:root { --background: #f8fafc; --foreground: #0f172a; }
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* { box-sizing: border-box; }
+body { background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; }
+.field {
+  display:block; width:100%; margin-top:.45rem; border:1px solid #cbd5e1;
+  border-radius:.65rem; background:white; padding:.7rem .8rem; color:#0f172a;
+  outline:none; font-weight:400;
 }
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+.field:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgb(37 99 235 / .12); }
+.primary-button { display:inline-flex; align-items:center; justify-content:center; border-radius:.7rem; background:#1d4ed8; padding:.75rem 1.1rem; color:white; font-size:.9rem; font-weight:650; transition:background .15s; }
+.primary-button:hover { background:#1e40af; }
+.primary-button:disabled { cursor:not-allowed; opacity:.6; }
